@@ -1,0 +1,44 @@
+name: Banking ETL
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs:
+
+  etl:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Packages
+      run: |
+        pip install -r requirements.txt
+
+    - name: Create Credentials
+      run: |
+        mkdir credentials
+        echo '${{ secrets.GCP_SA_KEY }}' > credentials/airflow-key.json
+
+    - name: Generate Data
+      run: |
+        python scripts/generate_data.py
+
+    - name: Transform Data
+      run: |
+        python scripts/transform_data.py
+
+    - name: Load To BigQuery
+      run: |
+        python scripts/load_to_bigquery.py
