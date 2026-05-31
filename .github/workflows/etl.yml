@@ -24,7 +24,9 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip cache purge|| true
           pip install --no-cache-dir --force-reinstall -r requirements.txt
-
+      
+      - name: Debug requirements
+        run: cat requirements.txt
       - name: Create Credentials
         run: |
           mkdir -p credentials
